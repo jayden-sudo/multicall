@@ -1,0 +1,110 @@
+import { ethers } from "ethers";
+
+const MulticallERC20ABI = [
+    {
+        "type": "function",
+        "name": "erc20",
+        "inputs": [
+            {
+                "name": "target",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "fetchDecimals",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "fetchSymbol",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "fetchName",
+                "type": "bool",
+                "internalType": "bool"
+            },
+            {
+                "name": "erc20Addresses",
+                "type": "address[]",
+                "internalType": "contract IERC20[]"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "balances",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "decimals",
+                "type": "uint8[]",
+                "internalType": "uint8[]"
+            },
+            {
+                "name": "symbols",
+                "type": "string[]",
+                "internalType": "string[]"
+            },
+            {
+                "name": "names",
+                "type": "string[]",
+                "internalType": "string[]"
+            }
+        ],
+        "stateMutability": "view"
+    }
+];
+const MulticallERC20Bytecode = "0x60806040526004361015610011575f80fd5b5f3560e01c63e4d0262714610024575f80fd5b3461049a5760a07ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc36011261049a5760043573ffffffffffffffffffffffffffffffffffffffff811680910361049a5760243590811515820361049a5760443590811515820361049a57606435801515810361049a576084359167ffffffffffffffff831161049a573660238401121561049a57826004013567ffffffffffffffff811161049a576024840193602436918360051b01011161049a57606093849385966100f0846106ac565b986100fe6040519a8b61063e565b848a5261010a856106ac565b957fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe060208c0197013688378a5f5b8781106104a657505050610382575b6102c4575b6101f8575b50506040516080808252955195810186905294859493929160a08601915f5b8181106101df575050508481036020860152602080845192838152019301905f5b8181106101c357505050816101b191856101bf9594036040870152610593565b908382036060850152610593565b0390f35b825160ff16855287965060209485019490920191600101610191565b8251845288975060209384019390920191600101610170565b90945061020485610736565b945f5b8181106102145750610151565b8060045f73ffffffffffffffffffffffffffffffffffffffff61024261023d600196888a6106c4565b610701565b16604051928380927f06fdde030000000000000000000000000000000000000000000000000000000082525afa5f91816102a0575b50610284575b5001610207565b61028e828a610722565b526102998189610722565b505f61027d565b6102bd9192503d805f833e6102b5818361063e565b81019061079c565b905f610277565b93506102cf82610736565b935f5b8381106102df575061014c565b8060045f73ffffffffffffffffffffffffffffffffffffffff61030861023d6001968a8a6106c4565b16604051928380927f95d89b410000000000000000000000000000000000000000000000000000000082525afa5f9181610366575b5061034a575b50016102d2565b6103548289610722565b5261035f8188610722565b505f610343565b61037b9192503d805f833e6102b5818361063e565b905f61033d565b955061038d836106ac565b9561039b604051978861063e565b8387527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe06103c8856106ac565b01366020890137865f5b8581106103e0575050610147565b80602073ffffffffffffffffffffffffffffffffffffffff61040861023d6004958b8b6106c4565b16604051938480927f313ce5670000000000000000000000000000000000000000000000000000000082525afa80925f91610464575b5060019261044e575b50016103d2565b60ff61045a8386610722565b911690525f610447565b90506020813d821161049e575b8161047e6020938361063e565b8101031261049a57519160ff8316830361049a5791600161043e565b5f80fd5b3d9150610471565b6024602073ffffffffffffffffffffffffffffffffffffffff6104cd61023d858d8d6106c4565b16604051928380927f70a082310000000000000000000000000000000000000000000000000000000082528860048301525afa5f918161055c575b50928291600194155f1461054c57507fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9161054291610722565b525b018b90610138565b9161055691610722565b52610544565b935090506020833d821161058b575b816105786020938361063e565b8101031261049a5791518d926001610508565b3d915061056b565b9080602083519182815201916020808360051b8301019401925f915b8383106105be57505050505090565b909192939460208080837fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe086600196030187527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0601f838c518051918291828752018686015e5f85828601015201160101970193019301919392906105af565b90601f7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0910116810190811067ffffffffffffffff82111761067f57604052565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52604160045260245ffd5b67ffffffffffffffff811161067f5760051b60200190565b91908110156106d45760051b0190565b7f4e487b71000000000000000000000000000000000000000000000000000000005f52603260045260245ffd5b3573ffffffffffffffffffffffffffffffffffffffff8116810361049a5790565b80518210156106d45760209160051b010190565b90610740826106ac565b61074d604051918261063e565b8281527fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe061077b82946106ac565b01905f5b82811061078b57505050565b80606060208093850101520161077f565b60208183031261049a5780519067ffffffffffffffff821161049a570181601f8201121561049a5780519067ffffffffffffffff821161067f576040519261080c60207fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe0601f860116018561063e565b8284526020838301011161049a57815f9260208093018386015e830101529056";
+const MulticallERC20Address = "0x72963e4ddb05d2225be1d337260320a307a97b00";// a random address
+
+async function main() {
+    const provider = new ethers.JsonRpcProvider("https://mainnet.optimism.io");
+
+    const tokens = [
+        '0xad42d013ac31486b73b6b059e748172994736426', '0x76fb31fb4af56892a25e32cfc43de717950c9278', '0xff733b2a3557a7ed6697007ab5d11b79fdd1b76b', '0x334cc734866e97d8452ae6261d68fd9bc9bfa31e', '0xfe8b128ba8c78aabc59d4c64cee7ff28e9379921', '0x07ad578ff86b135be19a12759064b802cb88854d', '0x3e7ef8f50246f725885102e8238cbba33f276747', '0xed50ace88bd42b45cb0f49be15395021e141254e', '0x9c9e5fd8bbc25984b178fdce6117defa39d2db39', '0xaddb6a0412de1ba0f936dcaeb8aaa24578dcf3b2', '0x9b88d293b7a791e40d36a39765ffd5a1b9b5c349', '0x0994206dfe8de6ec6920ff4d779b0d950605fb53', '0xec6adef5e1006bb305bb1975333e8fc4071295bf', '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1', '0x65559aa14915a70190438ef90104769e5e890a00', '0xd8737ca46aa6285de7b8777a8e3db232911bad41', '0xf1a0da3367bc7aa04f8d94ba57b862ff37ced174', '0x2e3d870790dc77a83dd1d18184acc7439a53f475', '0x67ccea5bb16181e7b4109c9c2143c24a1c2205be', '0x1eba7a6a72c894026cd654ac5cdcf83a46445b08', '0x589d35656641d6ab57a545f08cf473ecd9b6d5f7', '0x3a18dcc9745edcd1ef33ecb93b0b6eba5671e7ca', '0xfdb794692724153d1488ccdbe0c56c252596735f', '0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6', '0xfeaa9194f9f8c1b65429e31341a103071464907e', '0xc40f949f8a4e094d1b49a23ea9241d289b7b2819', '0x3390108e913824b8ead638444cc52b9abdf63798', '0xab7badef82e9fe11f6f33f87bc9bc2aa27f2fcb5', '0x2561aa2bb1d2eb6629edd7b0938d7679b8b49f9e', '0x4200000000000000000000000000000000000042', '0xc1c167cc44f7923cd0062c4370df962f9ddb16f5', '0x9e1028f5f1d5ede59748ffcee5532509976840e0', '0x7fb688ccf682d58f86d7e38e03f9d22e7705448b', '0xb548f63d4405466b36c0c0ac3318a22fdcec711a', '0x650af3c15af43dcb218406d30784416d64cfb6b2'
+    ];
+
+    const stateOverride = {
+        [MulticallERC20Address]: {
+            code: MulticallERC20Bytecode
+        }
+    };
+
+    const multicallERC20Interface = new ethers.Interface(MulticallERC20ABI);
+
+
+    const walletAddress = '0x041be0b39a80388364fe223dcd2b733d5a1144c4';
+    const fetchDecimals = true;
+    const fetchSymbol = true;
+    const fetchName = false;
+    const erc20Addresses = tokens;
+    const data = multicallERC20Interface.encodeFunctionData('erc20', [
+        walletAddress, fetchDecimals, fetchSymbol, fetchName, erc20Addresses
+    ])
+    const tx = {
+        to: MulticallERC20Address,
+        data
+    };
+
+    try {
+        const result = await provider.send('eth_call', [tx, 'latest', stateOverride]);
+        console.log("success");
+        // decode result
+        const decoded = multicallERC20Interface.decodeFunctionResult('erc20', result);
+
+        for (let i = 0; i < tokens.length; i++) {
+            console.log(`${tokens[i]}`, {
+                balance: ethers.formatUnits(decoded.balances[i], decoded.decimals[i]) + ' ' + decoded.symbols[i]
+            });
+        }
+    } catch (error: any) {
+        console.error("failed to call multicallERC20", error);
+        throw error;
+    }
+
+
+}
+
+main();
